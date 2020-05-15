@@ -1,11 +1,17 @@
 import os.path
 
+from pylons import config
+
 from saml2 import BINDING_HTTP_REDIRECT
 from saml2.saml import NAME_FORMAT_URI
 
-BASE= 'https://localhost:8080'
-#BASE= 'https://saml-test.datagov.ckan.org/'
-#BASE = 'http://localhost:5000/'
+print('hello sp_config')
+
+saml2_site_url = 'localhost:8080'
+saml2_idp_url = 'https://login.test.max.gov'
+
+base = config.get('saml2.site_url', saml2_site_url)
+idp_url = config.get('saml2.idp_url', saml2_idp_url)
 CONFIG_PATH = os.path.dirname(__file__)
 
 CONFIG = {
@@ -15,10 +21,11 @@ CONFIG = {
         'sp': {
             'name' : 'CKAN SP',
             'endpoints': {
-                'assertion_consumer_service': [BASE],
-                'single_logout_service' : [(BASE + 'slo',
+                'assertion_consumer_service': [base],
+                'single_logout_service' : [(base + 'slo',
                                             BINDING_HTTP_REDIRECT)],
             },
+            # Not sure about this stuff (not in config_max
             'required_attributes': [
                 'uid',
                 'name',
@@ -35,7 +42,8 @@ CONFIG = {
             ],
             'allow_unsolicited': True,
             'optional_attributes': [],
-            'idp': ['urn:mace:umu.se:saml:ckan:idp'],
+#            'idp': ['urn:mace:umu.se:saml:ckan:idp'],
+            'idp': [idp_url],
         }
     },
     'debug': 0,
@@ -61,10 +69,10 @@ CONFIG = {
     'name_form': NAME_FORMAT_URI,
     'logger': {
         'rotating': {
-            'filename': '/var/log/sp.log',
+            'filename': '/tmp/sp.log',
             'maxBytes': 100000,
             'backupCount': 5,
             },
-        'loglevel': 'error',
+        'loglevel': 'debug',
     }
 }

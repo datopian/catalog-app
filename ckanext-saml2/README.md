@@ -4,7 +4,7 @@ An extension to enable Single Sign On(SSO) for CKAN data portals via SAML2 Authe
 
 `datagov/v0.4.0` is the branch currently used in production at data.gov. It is a fork of https://github.com/DataShades/ckanext-saml2 and contains necessary changes for compatibility with the Max.gov idp.
 
-New releases of the default branch of the upstream repository should be evaluated for inclusion via rebase.
+New releases to the default branch of the upstream repository should be evaluated for inclusion via rebase, although the extension was not under active development at the time of writing.
 
 #### Requirements
 The following packages are required: memcached, repoze, m2crypto, xmlsec1, xmlsec1-openssl, swig
@@ -14,7 +14,7 @@ The following packages are required: memcached, repoze, m2crypto, xmlsec1, xmlse
 - Create custom database table:
 
 ```
-paster saml2 create -c config_file
+pster --plugin=ckanext-saml2 saml2 create -c /etc/ckan/production.iniaster saml2 create -c config_file
 ```
 - Append `saml2` to the `ckan.plugins` list in your ckan configuration file (i.e: `/etc/ckan/production.ini`)
 - make sure that fields are mapped correctly in `production.ini` i.e:
@@ -92,13 +92,18 @@ saml2.redirect_after_login = '/'
 saml2.sp_initiates_slo = true
 ```
 
+@TODO -- commit sp.xml
+@TODO -- why are pem keys committed here?!
+@TODO -- if not already this should ansible-vault to handle $PEM_PRIV 
+
 - Modify `ckanext/saml2/config/sp_config.py` to suit your needs. The BASE variable at the top need reference  the domain of the service provider (i.e changed to http://catalog.data.gov or wherever CKAN is currently hosted).
 - Place your identity provider's `idp.xml` metadata here: `ckanext/saml2/config/`
 - The certificates need to be placed in this directory: `ckanext/saml2/config/pki` (they need to be named
 `mycert.pem` & `mykey.pem`)
 - Generate the sp metadata (sp.xml):
-`/usr/lib/ckan/bin/python /usr/lib/ckan/src/pysaml2/tools/make_metadata.py /usr/lib/ckan/src/ckanext-saml2/ckanext/saml2/config/sp_config.py > sp.xml` (the paths to `python`, `make_metadata.py` `sp_config.py` might vary depending on where you installed ckan in your virtual env)
+g/usr/lib/ckan/bin/python /usr/lib/ckan/src/pysaml3/tools/make_metadata.py /usr/lib/ckan/src/ckanext-saml2/ckanext/saml2/config/sp_config.py > sp.xml` (the paths to `python`, `make_metadata.py` `sp_config.py` might vary depending on where you installed ckan in your virtual env
 - copy `ckanext/saml2/config/who.ini` to your ckan's config folder i.e: `/etc/ckan/who.ini`
+@TODO update sp log path for catalog 2.3:
 - make sure that your webserver can write to `/var/www/sp.log`
 - Add `saml2.default_org` and `saml2.default_role` - that values will be assigned to newly created users as organization and role in this organization accordingly
 - In order to enable native login and registration as default option, add `saml2.enable_native_login = true|false` directive to config file.
