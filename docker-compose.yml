@@ -18,6 +18,7 @@ services:
       - .:/opt/catalog-app
       - ckan:/usr/lib/ckan
       - /tmp/ckan
+      - ckanext-saml2:/srv/app/src/ckanext-saml2
     ports:
       - "5000:5000"
       - "8080:80"
@@ -46,3 +47,4 @@ services:
 volumes:
   ckan:
   pysaml2:
+  ckanext-saml2:

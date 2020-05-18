@@ -1,0 +1,21 @@
+version: '3'
+services:
+  db:
+    image: datagov/catalog-db:latest
+    environment:
+      POSTGRES_USER: postgres
+      DB_CKAN_USER: ckan
+      DB_CKAN_PASSWORD: pass
+      DB_CKAN_DB: ckan
+      DB_PYCSW_DB: pycsw
+
+  fgdc2iso:
+    image: datagov/catalog-fgdc2iso:latest
+    environment:
+      SIGNATURE:
+
+  redis:
+    build: ./docker/redis
+
+  solr:
+    image: datagov/catalog-solr:latest
